@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  flask:
+    build: .
+    ports: 
+      - ${FLASK_PORT}:${FLASK_PORT}
+    depends_on:
+      - redis
+    env_file:
+      - .env
+
+  redis:
+    image: redis:alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    
+volumes:
+  redis_data:
