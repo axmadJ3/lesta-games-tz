@@ -1,25 +1,27 @@
 stages:
   - build
   - test
-  - deploy
+
+services:
+  - docker:dind
 
 before_script:
   - echo "Preparing environment..."
-  - docker-compose -f docker-compose.yaml build --no-cache
+  - docker info
+  - docker-compose --version
 
 build_job:
   stage: build
   script:
-    - docker-compose up --build
-    - docker-compose ps
+    - echo "Building Docker images..."
+    - docker-compose build
 
 test_job:
   stage: test
-  image: python:3.9
   script:
-    - docker-compose run --rm flask pytest 
-
-deploy_job:
-  stage: deploy
-  script:
-    - echo "Deploying your project"
+    - echo "Starting containers..."
+    - docker-compose up -d
+    - docker-compose ps
+    - echo "Waiting for Flask app to be ready..."
+    - sleep 10
+    - docker-compose exec flask pytest
