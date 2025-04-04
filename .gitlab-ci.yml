@@ -1,12 +1,23 @@
 stages:
+  - build
   - test
   - deploy
+
+before_script:
+  - echo "Preparing environment..."
+  - docker-compose -f docker-compose.yaml build --no-cache
+
+build_job:
+  stage: build
+  script:
+    - docker-compose up --build
+    - docker-compose ps
 
 test_job:
   stage: test
   image: python:3.9
   script:
-    - echo "Running tests..."
+    - docker-compose run --rm flask pytest 
 
 deploy_job:
   stage: deploy
