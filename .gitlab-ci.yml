@@ -2,21 +2,12 @@ stages:
   - build
   - test
 
-services:
-  - docker:dind
-
-variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""
-
-before_script:
-  - echo "Preparing environment..."
-  - apt-get update && apt-get install -y docker.io
-  - docker info
-  - docker-compose --version
-
 build_job:
   stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+  services:
+    - docker:dind
   script:
     - echo "Building Docker images..."
     - docker-compose build
